@@ -11,6 +11,7 @@ import java.util.Date;
  * @Description:
  */
 public class DateUtils {
+    private DateUtils(){}
 
     private static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
 

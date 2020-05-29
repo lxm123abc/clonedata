@@ -15,7 +15,7 @@ public class Contanst {
      * Common
      */
     public static final String BASEURL = "/home/zte/clonedata/";
-    public static final String METHOD_TYPE = "GET";
+    public static final String METHOD_TYPE_GET = "GET";
     public static final String CHARSET = "utf-8";
 
     /**

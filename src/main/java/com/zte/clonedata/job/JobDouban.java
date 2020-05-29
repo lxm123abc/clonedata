@@ -2,22 +2,19 @@ package com.zte.clonedata.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zte.clonedata.Contanst;
-import com.zte.clonedata.dao.DoubanRepository;
 import com.zte.clonedata.model.Douban;
-import com.zte.clonedata.util.DateUtils;
-import com.zte.clonedata.util.HttpUtils;
-import com.zte.clonedata.util.JSONUtils;
-import com.zte.clonedata.util.PicDownUtils;
+import com.zte.clonedata.util.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * ProjectName: clonedata-com.zte.clonedata.job
@@ -31,18 +28,16 @@ import java.util.Map;
 @Async
 public class JobDouban{
 
-
-    @Autowired
-    private DoubanRepository doubanRepository;
-
     /**
      */
-    @Scheduled(cron = "0 36 * * * ?")
+    @Scheduled(cron = "0 6 * * * ?")
     public void execute(){
+        String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
+        long start = System.currentTimeMillis();
+        log.info("{} 豆瓣开始执行任务 =================",nowYYYYMMDD);
         PicDownUtils picDownUtils = new PicDownUtils();
         int i = 0;
         int j = 0;
-        String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
         while (true){
             String url ="https://movie.douban.com/j/search_subjects?type=movie&tag=热门&page_limit="
                     .concat(String.valueOf(i+1000))
@@ -57,6 +52,7 @@ public class JobDouban{
             List<Douban> doubans = JSONUtils.parseArray(data, Douban.class);
             for (Douban douban : doubans) {
                 douban.setSort(j++);
+                douban.setDid(UUID.randomUUID().toString().replaceAll("-",""));
                 douban.setPDate(nowYYYYMMDD);
                 String imageurl = douban.getCover();
                 String name = imageurl.substring(imageurl.lastIndexOf("/")+1);
@@ -65,9 +61,10 @@ public class JobDouban{
                 picDownUtils.urls.add(douban.getCover());
                 picDownUtils.paths.add(path);
             }
-            doubanRepository.saveAll(doubans);
-            log.info("豆瓣第" + i + "也加载完毕");
+            JDBCUtils.saveDouban(doubans);
+            log.info("豆瓣第{}页加载完毕 =============",i);
         }
+        log.info("豆瓣执行任务结束,用时:{} =================",System.currentTimeMillis()-start);
         Thread t1 = new Thread(picDownUtils);
         t1.start();
     }

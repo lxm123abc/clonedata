@@ -1,6 +1,7 @@
 package com.zte.clonedata.util;
 
 import com.zte.clonedata.Contanst;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -17,11 +18,13 @@ import java.io.IOException;
  * @Date: Creating in 18:03 2020/5/28
  * @Description:
  */
+@Slf4j
 public class HttpUtils {
     private HttpUtils(){}
 
 
     public static String getJson(String url) {
+        log.info("即将访问: {}, GET",url);
         HttpClient client = HttpClients.createDefault();
         HttpGet httpGet = null;
         HttpResponse response = null;
