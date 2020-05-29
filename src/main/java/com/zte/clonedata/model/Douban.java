@@ -13,7 +13,7 @@ import java.io.Serializable;
  * ProjectName: clonedata-com.zte.clonedata.model
  *
  * @Author: Liang Xiaomin
- * @Date: Creating in 12:00 2020/5/28
+ * @Date: Creating in 16:00 2020/5/28
  * @Description:
  */
 @Data
@@ -48,5 +48,9 @@ public class Douban{
     private boolean is_new;
     @Column(name = "sort")
     private int sort;
+    @Column(name = "p_date")
+    private String pDate;
+    @Column(name = "filepath")
+    private String filepath;
 
 }

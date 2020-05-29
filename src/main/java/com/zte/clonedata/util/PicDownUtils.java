@@ -14,7 +14,7 @@ import java.util.List;
  * ProjectName: clonedata-com.zte.clonedata.util
  *
  * @Author: Liang Xiaomin
- * @Date: Creating in 15:17 2020/5/28
+ * @Date: Creating in 17:17 2020/5/28
  * @Description:
  */
 public class PicDownUtils implements Runnable{
@@ -27,15 +27,14 @@ public class PicDownUtils implements Runnable{
         for (int i = 0; i < urls.size(); i++) {
 
             String url = urls.get(i);
-            String type = paths.get(i);
+            String path = paths.get(i);
 
-            String name = url.substring(url.lastIndexOf("/")+1);
             try{
                 HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
                 httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE);
                 InputStream inputStream = httpURLConnection.getInputStream();
                 if (inputStream != null){
-                    File file = new File(Contanst.BASEURL.concat(type).concat(File.separator).concat(name));
+                    File file = new File(Contanst.BASEURL.concat(path));
                     File fileParent = file.getParentFile();
                     //判断是否存在
                     if (!fileParent.exists()) {

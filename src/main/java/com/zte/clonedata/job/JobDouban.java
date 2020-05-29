@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zte.clonedata.Contanst;
 import com.zte.clonedata.dao.DoubanRepository;
 import com.zte.clonedata.model.Douban;
+import com.zte.clonedata.util.DateUtils;
 import com.zte.clonedata.util.HttpUtils;
 import com.zte.clonedata.util.JSONUtils;
 import com.zte.clonedata.util.PicDownUtils;
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +23,7 @@ import java.util.Map;
  * ProjectName: clonedata-com.zte.clonedata.job
  *
  * @Author: Liang Xiaomin
- * @Date: Creating in 13:46 2020/5/28
+ * @Date: Creating in 16:46 2020/5/28
  * @Description:
  */
 @Slf4j
@@ -35,11 +37,12 @@ public class JobDouban{
 
     /**
      */
-    @Scheduled(cron = "0 16 * * * ?")
+    @Scheduled(cron = "0 36 * * * ?")
     public void execute(){
         PicDownUtils picDownUtils = new PicDownUtils();
         int i = 0;
         int j = 0;
+        String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
         while (true){
             String url ="https://movie.douban.com/j/search_subjects?type=movie&tag=热门&page_limit="
                     .concat(String.valueOf(i+1000))
@@ -54,8 +57,13 @@ public class JobDouban{
             List<Douban> doubans = JSONUtils.parseArray(data, Douban.class);
             for (Douban douban : doubans) {
                 douban.setSort(j++);
+                douban.setPDate(nowYYYYMMDD);
+                String imageurl = douban.getCover();
+                String name = imageurl.substring(imageurl.lastIndexOf("/")+1);
+                String path = Contanst.TYPE_DOUBAN.concat(String.valueOf(i)).concat(File.separator).concat(name);
+                douban.setFilepath(path);
                 picDownUtils.urls.add(douban.getCover());
-                picDownUtils.paths.add(Contanst.TYPE_DOUBAN.concat(String.valueOf(i)));
+                picDownUtils.paths.add(path);
             }
             doubanRepository.saveAll(doubans);
             log.info("豆瓣第" + i + "也加载完毕");
