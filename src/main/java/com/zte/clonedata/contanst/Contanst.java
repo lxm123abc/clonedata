@@ -1,4 +1,4 @@
-package com.zte.clonedata;
+package com.zte.clonedata.contanst;
 
 import com.zte.clonedata.util.DateUtils;
 

@@ -1,4 +1,4 @@
-package com.zte.clonedata;
+package com.zte.clonedata.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

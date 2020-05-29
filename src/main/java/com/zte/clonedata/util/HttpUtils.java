@@ -1,6 +1,6 @@
 package com.zte.clonedata.util;
 
-import com.zte.clonedata.Contanst;
+import com.zte.clonedata.contanst.Contanst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;

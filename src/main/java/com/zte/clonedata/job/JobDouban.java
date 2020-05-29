@@ -1,17 +1,15 @@
 package com.zte.clonedata.job;
 
 import com.alibaba.fastjson.JSONObject;
-import com.zte.clonedata.Contanst;
+import com.zte.clonedata.contanst.Contanst;
 import com.zte.clonedata.model.Douban;
 import com.zte.clonedata.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -45,9 +43,6 @@ public class JobDouban{
                     .concat(String.valueOf(i));
             String result = HttpUtils.getJson(url);
             String data = JSONObject.parseObject(result, Map.class).get(Contanst.JSON_KEY_DOUBAN).toString();
-            if (StringUtils.isEmpty(data) || data.length() <10){
-                break;
-            }
             i = i+1000;
             List<Douban> doubans = JSONUtils.parseArray(data, Douban.class);
             for (Douban douban : doubans) {
@@ -63,6 +58,7 @@ public class JobDouban{
             }
             JDBCUtils.saveDouban(doubans);
             log.info("豆瓣第{}页加载完毕 =============",i);
+            if (doubans.size()<1000) break;
         }
         log.info("豆瓣执行任务结束,用时:{} =================",System.currentTimeMillis()-start);
         Thread t1 = new Thread(picDownUtils);
