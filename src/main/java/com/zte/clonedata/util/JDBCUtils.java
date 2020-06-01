@@ -1,7 +1,10 @@
 package com.zte.clonedata.util;
 
 import com.zte.clonedata.model.Douban;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+
 import java.sql.*;
 import java.util.List;
 
@@ -15,23 +18,25 @@ import java.util.List;
 @Slf4j
 public class JDBCUtils {
 
-    public static void main(String[] args) throws SQLException {
-        getCon();
-    }
+    private static final String username = "root";
+    private static final String password = "root";
+    private static final String ip = "localhost";
+    private static final String port = "3306";
+    private static final String database = "testa";
+
+
+
+
+    private static final StringBuffer sb = new StringBuffer().append("jdbc:mysql://")
+            .append(ip).append(":").append(port).append("/").append(database).append("?")
+            .append("user=").append(username).append("&password=").append(password)
+            .append("&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC");
+
     public static Connection getCon() throws SQLException {
-        Connection con = DriverManager.getConnection("jdbc:mysql://192.168.139.202:3306/testa?" +
-                "user=root&password=123&useUnicode=true&characterEncoding=utf-8");
+        Connection con = DriverManager.getConnection(sb.toString());
         return con;
     }
 
-    static {
-        //检查豆瓣表是否存在
-        try {
-            checkDouban();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void saveDouban(List<Douban> list){
         long start = System.currentTimeMillis();
@@ -85,7 +90,7 @@ public class JDBCUtils {
     }
 
 
-    private static void checkDouban() throws SQLException {
+    public static void checkDouban() throws SQLException {
         Connection con = getCon();
         PreparedStatement ps = con.prepareStatement("select count(*) as c from clone_douban");
         ResultSet rs = null;
@@ -121,4 +126,20 @@ public class JDBCUtils {
         ps.close();
         con.close();
     }
+
+    public static void delete() throws SQLException {
+        Connection con = getCon();
+        String yyyyMMdd = DateTime.now().minusDays(7).toString("yyyyMMdd");
+        //删除豆瓣
+        deleteDouban(con,yyyyMMdd);
+        con.close();
+    }
+
+    private static void deleteDouban(Connection con,String yyyyMMdd) throws SQLException {
+        PreparedStatement ps = con.prepareStatement("delete from clone_douban where p_date < ?");
+        ps.setString(1,yyyyMMdd);
+        ps.execute();
+        ps.close();
+    }
+
 }
