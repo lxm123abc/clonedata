@@ -28,7 +28,7 @@ public class JobDouban{
 
     /**
      */
-    @Scheduled(cron = "0 6 * * * ?")
+    @Scheduled(cron = "0 30 * * * ?")
     public void execute(){
         String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
         long start = System.currentTimeMillis();

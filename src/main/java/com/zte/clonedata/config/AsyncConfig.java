@@ -13,19 +13,17 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 public class AsyncConfig {
-/*
-    此处成员变量应该使用@Value从配置中读取
+    /**
+     * @Value从配置中读取
      */
-    private int corePoolSize = 10;
-    private int maxPoolSize = 200;
-    private int queueCapacity = 10;
+
 
     @Bean
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(200);
+        executor.setQueueCapacity(10);
         executor.initialize();
         return executor;
     }
