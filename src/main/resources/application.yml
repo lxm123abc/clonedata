@@ -1,2 +1,15 @@
 server:
   port: 8090
+
+# MYSQL数据库连接信息
+db:
+  url: jdbc:mysql://localhost:3306/testa?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+  username: root
+  password: 123
+
+cron:
+  #定时删除数据cron
+  delete: 0 0 0 * * ?
+  down:
+    #豆瓣执行时间
+    douban: 0 49 * * * ?

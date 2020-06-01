@@ -5,6 +5,7 @@ import com.zte.clonedata.contanst.Contanst;
 import com.zte.clonedata.model.Douban;
 import com.zte.clonedata.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,12 @@ import java.util.UUID;
 @Async
 public class JobDouban{
 
+    @Autowired
+    private JDBCUtils jdbcUtils;
+
     /**
      */
-    @Scheduled(cron = "0 30 * * * ?")
+    @Scheduled(cron = "${cron.down.douban}")
     public void execute(){
         String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
         long start = System.currentTimeMillis();
@@ -56,7 +60,7 @@ public class JobDouban{
                 picDownUtils.urls.add(douban.getCover());
                 picDownUtils.paths.add(path);
             }
-            JDBCUtils.saveDouban(doubans);
+            jdbcUtils.saveDouban(doubans);
             log.info("豆瓣第{}页加载完毕 =============",i);
             if (doubans.size()<1000) break;
         }

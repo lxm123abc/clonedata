@@ -1,6 +1,7 @@
 package com.zte.clonedata;
 
 import com.zte.clonedata.util.JDBCUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +19,10 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    @Autowired
+    private JDBCUtils jdbcUtils;
     @PostConstruct
     public void init() throws SQLException {
-        JDBCUtils.checkDouban();
+        jdbcUtils.checkDouban();
     }
 }

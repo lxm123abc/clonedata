@@ -1,9 +1,10 @@
 package com.zte.clonedata.util;
 
 import com.zte.clonedata.model.Douban;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.List;
@@ -16,29 +17,30 @@ import java.util.List;
  * @Description:
  */
 @Slf4j
+@Component
 public class JDBCUtils {
 
-    private static final String username = "root";
-    private static final String password = "root";
-    private static final String ip = "localhost";
-    private static final String port = "3306";
-    private static final String database = "testa";
+    @Value("${db.url}")
+    private String url;
+    @Value("${db.username}")
+    private String username;
+    @Value("${db.password}")
+    private String password;
 
 
+    private final StringBuffer sb = new StringBuffer();
 
-
-    private static final StringBuffer sb = new StringBuffer().append("jdbc:mysql://")
-            .append(ip).append(":").append(port).append("/").append(database).append("?")
-            .append("user=").append(username).append("&password=").append(password)
-            .append("&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC");
-
-    public static Connection getCon() throws SQLException {
+    public Connection getCon() throws SQLException {
+        if (sb.length() == 0){
+            sb.append(url).append("&user=").append(username).append("&password=")
+                    .append(password).append("&autoRec");
+        }
         Connection con = DriverManager.getConnection(sb.toString());
         return con;
     }
 
 
-    public static void saveDouban(List<Douban> list){
+    public void saveDouban(List<Douban> list){
         long start = System.currentTimeMillis();
         log.info("执行数据库新增操作 ===============");
         //数据库连接
@@ -90,7 +92,7 @@ public class JDBCUtils {
     }
 
 
-    public static void checkDouban() throws SQLException {
+    public void checkDouban() throws SQLException {
         Connection con = getCon();
         PreparedStatement ps = con.prepareStatement("select count(*) as c from clone_douban");
         ResultSet rs = null;
@@ -127,7 +129,7 @@ public class JDBCUtils {
         con.close();
     }
 
-    public static void delete() throws SQLException {
+    public void delete() throws SQLException {
         Connection con = getCon();
         String yyyyMMdd = DateTime.now().minusDays(7).toString("yyyyMMdd");
         //删除豆瓣
