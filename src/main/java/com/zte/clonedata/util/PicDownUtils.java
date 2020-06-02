@@ -25,9 +25,10 @@ import java.util.List;
 @Slf4j
 public class PicDownUtils implements Runnable{
 
-    public volatile static List<String > urls = new LinkedList<>();
-    public volatile static List<String>  paths = new LinkedList<>();
+    public volatile List<String > urls = new LinkedList<>();
+    public volatile List<String>  paths = new LinkedList<>();
 
+    private int err = 0;
     @Override
     public void run() {
         synchronized (this){
@@ -36,33 +37,17 @@ public class PicDownUtils implements Runnable{
             int size = urls.size();
             log.info("{} 开始执行图片下载,保存 任务 ===============",nowYYYYMMDD);
             log.info("图片下载个数为: {}",size);
-            int err = 0;
             List<File> fileList = new LinkedList<>();
             for (int i = 0; i < size; i++) {
-
                 String url = urls.get(i);
                 String path = paths.get(i);
-
-                try{
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-                    httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    if (inputStream != null){
-                        File file = new File(Contanst.BASEURL.concat(path));
-                        File fileParent = file.getParentFile();
-                        //判断是否存在
-                        if (!fileParent.exists()) {
-                            fileParent.mkdirs();
-                        }
-                        file.createNewFile();
-                        //保存本地
-                        FileUtils.writeToFile(file,inputStream);
-                        fileList.add(file);
-                    }
-                }catch (IOException e){
+                File file = null;
+                try {
+                    file = downSaveReturnFile(url, path);
+                } catch (InterruptedException e) {
                     log.error(e.getMessage());
-                    err++;
                 }
+                if (file != null) fileList.add(file);
             }
             DecimalFormat df=new DecimalFormat("0.00");
             log.info("成功: {}, 失败: {}, 成功率: {}",size,err,err==0?"100%":String.valueOf(df.format((double) (size-err) / (double) size *100)).concat("%"));
@@ -73,8 +58,41 @@ public class PicDownUtils implements Runnable{
         }
     }
 
-    public void clear(){
-        urls.clear();
-        paths.clear();
+    private int c = 0;
+    private File downSaveReturnFile(String url, String path) throws InterruptedException {
+        try{
+            HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+            httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
+            InputStream inputStream = httpURLConnection.getInputStream();
+            if (inputStream != null){
+                File file = new File(Contanst.BASEURL.concat(path));
+                File fileParent = file.getParentFile();
+                //判断是否存在
+                if (!fileParent.exists()) {
+                    fileParent.mkdirs();
+                }
+                file.createNewFile();
+                //保存本地
+                FileUtils.writeToFile(file,inputStream);
+                return file;
+            }
+            c = 0;
+            Thread.sleep(200);
+        }catch (IOException e){
+            log.error(e.getMessage());
+            if (c++ < 10){
+                log.error("三秒后再次尝试连接  >>>{}<<<",c);
+                Thread.sleep(3000);
+                return downSaveReturnFile(url,path);
+            }else{
+                err++;
+                c = 0;
+            }
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
+
+
 }

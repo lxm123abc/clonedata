@@ -21,7 +21,7 @@ public class PageWeb {
     private JobDouban jobDouban;
 
     @GetMapping("/execute")
-    public void execute(String id,String token){
+    public void execute(String id,String token) throws InterruptedException {
         if (token.equals("LXM_123!")){
             jobDouban.execute();
         }
