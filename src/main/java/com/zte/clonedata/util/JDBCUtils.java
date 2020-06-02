@@ -27,15 +27,8 @@ public class JDBCUtils {
     @Value("${db.password}")
     private String password;
 
-
-    private final StringBuffer sb = new StringBuffer();
-
     public Connection getCon() throws SQLException {
-        if (sb.length() == 0){
-            sb.append(url).append("&user=").append(username).append("&password=")
-                    .append(password).append("&autoRec");
-        }
-        Connection con = DriverManager.getConnection(sb.toString());
+        Connection con = DriverManager.getConnection(url,username,password);
         return con;
     }
 
@@ -144,4 +137,8 @@ public class JDBCUtils {
         ps.close();
     }
 
+    public static void main(String[] args) throws SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/testa?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&user=root&password=123&autoRec");
+        connection.close();
+    }
 }
