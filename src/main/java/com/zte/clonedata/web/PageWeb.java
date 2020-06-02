@@ -22,9 +22,14 @@ public class PageWeb {
 
     @GetMapping("/execute")
     public void execute(String id,String token){
-        if (token.equals("LXM_123+!")){
+        if (token.equals("LXM_123!")){
             jobDouban.execute();
         }
+    }
+
+    @RequestMapping("/")
+    public void ftp(){
+
     }
 
 }

@@ -2,12 +2,16 @@ package com.zte.clonedata.util;
 
 import com.zte.clonedata.contanst.Contanst;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,39 +30,51 @@ public class PicDownUtils implements Runnable{
 
     @Override
     public void run() {
-        String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
-        long start = System.currentTimeMillis();
-        int size = urls.size();
-        log.info("{} 开始执行图片下载任务 ===============",nowYYYYMMDD);
-        log.info("图片下载个数为: {}",size);
-        int err = 0;
-        for (int i = 0; i < size; i++) {
+        synchronized (this){
+            String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
+            long start = System.currentTimeMillis();
+            int size = urls.size();
+            log.info("{} 开始执行图片下载,保存 任务 ===============",nowYYYYMMDD);
+            log.info("图片下载个数为: {}",size);
+            int err = 0;
+            List<File> fileList = new LinkedList<>();
+            for (int i = 0; i < size; i++) {
 
-            String url = urls.get(i);
-            String path = paths.get(i);
+                String url = urls.get(i);
+                String path = paths.get(i);
 
-            try{
-                HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-                httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
-                InputStream inputStream = httpURLConnection.getInputStream();
-                if (inputStream != null){
-                    File file = new File(Contanst.BASEURL.concat(path));
-                    File fileParent = file.getParentFile();
-                    //判断是否存在
-                    if (!fileParent.exists()) {
-                        fileParent.mkdirs();
+                try{
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
+                    httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    if (inputStream != null){
+                        File file = new File(Contanst.BASEURL.concat(path));
+                        File fileParent = file.getParentFile();
+                        //判断是否存在
+                        if (!fileParent.exists()) {
+                            fileParent.mkdirs();
+                        }
+                        file.createNewFile();
+                        //保存本地
+                        FileUtils.writeToFile(file,inputStream);
+                        fileList.add(file);
                     }
-                    file.createNewFile();
-                    FileUtils.writeToFile(file,inputStream);
+                }catch (IOException e){
+                    log.error(e.getMessage());
+                    err++;
                 }
-            }catch (IOException e){
-                log.error(e.getMessage());
-                err++;
             }
+            DecimalFormat df=new DecimalFormat("0.00");
+            log.info("成功: {}, 失败: {}, 成功率: {}",size,err,err==0?"100%":String.valueOf(df.format((double) (size-err) / (double) size *100)).concat("%"));
+            log.info("执行图片下载,保存任务结束,用时: {} ===============",System.currentTimeMillis()-start);
+            //FTP
+            FTPUtils ftpUtils = SpringContextUtil.getBean(FTPUtils.class);
+            ftpUtils.uploadFile(fileList);
         }
+    }
+
+    public void clear(){
         urls.clear();
         paths.clear();
-        log.info("成功: {}, 失败: {}, 成功率: {}",size,err,err==0?"100%":String.valueOf(err/size*100).concat("%"));
-        log.info("执行图片下载任务结束,用时: {} ===============",System.currentTimeMillis()-start);
     }
 }

@@ -2,6 +2,7 @@ package com.zte.clonedata.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zte.clonedata.contanst.Contanst;
+import com.zte.clonedata.dao.DoubanDAO;
 import com.zte.clonedata.model.Douban;
 import com.zte.clonedata.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ import java.util.UUID;
 public class JobDouban{
 
     @Autowired
-    private JDBCUtils jdbcUtils;
+    private DoubanDAO doubanDAO;
 
     /**
      */
@@ -38,9 +39,9 @@ public class JobDouban{
         String nowYYYYMMDD = DateUtils.getNowYYYYMMDD();
         long start = System.currentTimeMillis();
         log.info("{} 豆瓣开始执行任务 =================",nowYYYYMMDD);
-        PicDownUtils picDownUtils = new PicDownUtils();
         int i = 0;
         int j = 0;
+        PicDownUtils picDownUtils = new PicDownUtils();
         while (true){
             String url ="https://movie.douban.com/j/search_subjects?type=movie&tag=热门&page_limit="
                     .concat(String.valueOf(i+1000))
@@ -61,7 +62,7 @@ public class JobDouban{
                 picDownUtils.urls.add(douban.getCover());
                 picDownUtils.paths.add(path);
             }
-            jdbcUtils.saveDouban(doubans);
+            doubanDAO.save(doubans);
             log.info("豆瓣第{}页加载完毕 =============",i);
             if (doubans.size()<1000) break;
         }
@@ -69,5 +70,6 @@ public class JobDouban{
         Thread t1 = new Thread(picDownUtils);
         t1.start();
     }
+
 
 }

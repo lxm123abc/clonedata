@@ -7,9 +7,10 @@ db:
   username: root
   password: 123
 
+
 cron:
   #定时删除数据cron
   delete: 0 0 0 * * ?
   down:
     #豆瓣执行时间
-    douban: 0 49 * * * ?
+    douban: 0 40 * * * ?
