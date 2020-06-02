@@ -59,7 +59,7 @@ public class DoubanDAO {
             });
             preparedStatement.executeBatch();//执行
             preparedStatement.close();
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             log.error(e.getMessage());
             log.error("新增时发生错误 ===============");
         }finally {
@@ -75,7 +75,7 @@ public class DoubanDAO {
     };
 
 
-    public void check() throws SQLException {
+    public void check() throws SQLException, ClassNotFoundException {
         Connection con = jdbcUtils.getCon();
         PreparedStatement ps = con.prepareStatement("select count(*) as c from clone_douban");
         ResultSet rs = null;

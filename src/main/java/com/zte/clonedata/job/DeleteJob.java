@@ -29,7 +29,7 @@ public class DeleteJob {
      * 每日凌晨删除7天以前的记录
      */
     @Scheduled(cron = "${cron.delete}")
-    public void execute() throws SQLException {
+    public void execute() throws SQLException, ClassNotFoundException {
         log.info("清除任务开始  =================");
         jdbcUtils.delete();
     }

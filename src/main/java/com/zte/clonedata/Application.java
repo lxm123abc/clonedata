@@ -29,7 +29,7 @@ public class Application {
     @Autowired
     private FTPUtils ftpUtils;
     @PostConstruct
-    public void init() throws SQLException {
+    public void init() throws SQLException, ClassNotFoundException {
         doubanDAO.check();
         ftpUtils.connect();
         ftpUtils.disconnect();

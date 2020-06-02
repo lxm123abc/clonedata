@@ -31,14 +31,15 @@ public class JDBCUtils {
     @Autowired
     private DoubanDAO doubanDAO;
 
-    public Connection getCon() throws SQLException {
+    public Connection getCon() throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.jdbc.Driver");
         Connection con = DriverManager.getConnection(url,username,password);
         return con;
     }
 
 
 
-    public void delete() throws SQLException {
+    public void delete() throws SQLException, ClassNotFoundException {
         Connection con = getCon();
         String yyyyMMdd = DateTime.now().minusDays(7).toString("yyyyMMdd");
         //删除豆瓣
