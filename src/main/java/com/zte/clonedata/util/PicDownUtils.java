@@ -2,9 +2,6 @@ package com.zte.clonedata.util;
 
 import com.zte.clonedata.contanst.Contanst;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,12 +57,15 @@ public class PicDownUtils implements Runnable{
 
     private int c = 0;
     private File downSaveReturnFile(String url, String path) throws InterruptedException {
+        File file = new File(Contanst.BASEURL.concat(path));
+        if (file.exists()){
+            return file;
+        }
         try{
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
             InputStream inputStream = httpURLConnection.getInputStream();
             if (inputStream != null){
-                File file = new File(Contanst.BASEURL.concat(path));
                 File fileParent = file.getParentFile();
                 //判断是否存在
                 if (!fileParent.exists()) {
@@ -90,6 +90,7 @@ public class PicDownUtils implements Runnable{
             }
         } catch (InterruptedException e) {
             log.error(e.getMessage());
+            c = 0;
         }
         return null;
     }

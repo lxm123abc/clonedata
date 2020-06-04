@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 实现对spring context 的管理
- * @author FB
- * @2017年3月29日
- * @上午9:07:27
- * @
+配置bean
+ @Bean
+ public SpringContextUtil springContextHolder(){
+ return new SpringContextUtil();
+ }
  */
 @Slf4j
 public class SpringContextUtil implements ApplicationContextAware {

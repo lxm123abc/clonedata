@@ -23,5 +23,6 @@ public class Contanst {
      */
     public static final String TYPE_DOUBAN = DateUtils.getNowYYYYMMDD().concat("/douban/douban");
     public static final String JSON_KEY_DOUBAN = "subjects";
-
+    public static final String DOUBAN_HOST1 = "movie.douban.com";
+    public static final String DOUBAN_HOST2 = "douban.uieee.com";
 }

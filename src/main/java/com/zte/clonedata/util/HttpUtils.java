@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -22,16 +23,16 @@ import java.io.IOException;
 public class HttpUtils {
     private HttpUtils(){}
 
-
-    public static String getJson(String url) {
+    public static String getJson(String url,String host) throws Exception {
         log.info("即将访问: {}, GET",url);
+        //CloseableHttpClient client = initHttpClient();
         HttpClient client = HttpClients.createDefault();
         HttpGet httpGet = null;
         HttpResponse response = null;
         String resultJson = null;
         try {
             httpGet = new HttpGet(url);
-            httpGet.setHeader("Host", "movie.douban.com");
+            httpGet.setHeader("Host", host);
             httpGet.setHeader(
                     "User-Agent",
                     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
@@ -59,5 +60,15 @@ public class HttpUtils {
         }
         return "";
 
+    }
+
+    public static CloseableHttpClient initHttpClient() throws Exception {
+        CloseableHttpClient closeableHttpClient = SpringContextUtil.getBean("httpClient");
+        if (closeableHttpClient == null) {
+            log.error("连接池获取异常");
+            throw new Exception("连接池获取异常");
+        } else {
+            return closeableHttpClient;
+        }
     }
 }

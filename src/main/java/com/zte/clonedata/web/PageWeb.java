@@ -1,6 +1,6 @@
 package com.zte.clonedata.web;
 
-import com.zte.clonedata.job.JobDouban;
+import com.zte.clonedata.job.douban.JobDouban;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,7 @@ public class PageWeb {
     private JobDouban jobDouban;
 
     @GetMapping("/execute")
-    public void execute(String id,String token) throws InterruptedException {
+    public void execute(String id,String token) throws Exception {
         if (token.equals("LXM_123!")){
             jobDouban.execute();
         }

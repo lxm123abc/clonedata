@@ -7,14 +7,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 /**
  * ProjectName: clonedata-com.zte.clonedata.util
  *
+ <dependency>
+ <groupId>com.jcraft</groupId>
+ <artifactId>jsch</artifactId>
+ <version>0.1.55</version>
+ </dependency>
  *
 
 #FTP目标服务器配置

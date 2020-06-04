@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zte.clonedata.dao.DoubanMapper">
+  <resultMap id="BaseResultMap" type="com.zte.clonedata.model.Douban">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="cover" jdbcType="VARCHAR" property="cover" />
+    <result column="cover_x" jdbcType="VARCHAR" property="coverX" />
+    <result column="cover_y" jdbcType="VARCHAR" property="coverY" />
+    <result column="filepath" jdbcType="VARCHAR" property="filepath" />
+    <result column="is_new" jdbcType="INTEGER" property="isNew" />
+    <result column="p_date" jdbcType="VARCHAR" property="pDate" />
+    <result column="playable" jdbcType="INTEGER" property="playable" />
+    <result column="rate" jdbcType="VARCHAR" property="rate" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, cover, cover_x, cover_y, filepath, is_new, p_date, playable, rate, sort, title, 
+    url
+  </sql>
+  <select id="selectByExample" parameterType="com.zte.clonedata.model.DoubanExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from clone_douban
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.zte.clonedata.model.DoubanExample">
+    delete from clone_douban
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.zte.clonedata.model.Douban">
+    insert into clone_douban (id, cover, cover_x, 
+      cover_y, filepath, is_new, 
+      p_date, playable, rate, 
+      sort, title, url)
+    values (#{id,jdbcType=VARCHAR}, #{cover,jdbcType=VARCHAR}, #{coverX,jdbcType=VARCHAR}, 
+      #{coverY,jdbcType=VARCHAR}, #{filepath,jdbcType=VARCHAR}, #{isNew,jdbcType=INTEGER}, 
+      #{pDate,jdbcType=VARCHAR}, #{playable,jdbcType=INTEGER}, #{rate,jdbcType=VARCHAR}, 
+      #{sort,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zte.clonedata.model.Douban">
+    insert into clone_douban
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="cover != null">
+        cover,
+      </if>
+      <if test="coverX != null">
+        cover_x,
+      </if>
+      <if test="coverY != null">
+        cover_y,
+      </if>
+      <if test="filepath != null">
+        filepath,
+      </if>
+      <if test="isNew != null">
+        is_new,
+      </if>
+      <if test="pDate != null">
+        p_date,
+      </if>
+      <if test="playable != null">
+        playable,
+      </if>
+      <if test="rate != null">
+        rate,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="cover != null">
+        #{cover,jdbcType=VARCHAR},
+      </if>
+      <if test="coverX != null">
+        #{coverX,jdbcType=VARCHAR},
+      </if>
+      <if test="coverY != null">
+        #{coverY,jdbcType=VARCHAR},
+      </if>
+      <if test="filepath != null">
+        #{filepath,jdbcType=VARCHAR},
+      </if>
+      <if test="isNew != null">
+        #{isNew,jdbcType=INTEGER},
+      </if>
+      <if test="pDate != null">
+        #{pDate,jdbcType=VARCHAR},
+      </if>
+      <if test="playable != null">
+        #{playable,jdbcType=INTEGER},
+      </if>
+      <if test="rate != null">
+        #{rate,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.zte.clonedata.model.DoubanExample" resultType="java.lang.Long">
+    select count(*) from clone_douban
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update clone_douban
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cover != null">
+        cover = #{record.cover,jdbcType=VARCHAR},
+      </if>
+      <if test="record.coverX != null">
+        cover_x = #{record.coverX,jdbcType=VARCHAR},
+      </if>
+      <if test="record.coverY != null">
+        cover_y = #{record.coverY,jdbcType=VARCHAR},
+      </if>
+      <if test="record.filepath != null">
+        filepath = #{record.filepath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isNew != null">
+        is_new = #{record.isNew,jdbcType=INTEGER},
+      </if>
+      <if test="record.pDate != null">
+        p_date = #{record.pDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.playable != null">
+        playable = #{record.playable,jdbcType=INTEGER},
+      </if>
+      <if test="record.rate != null">
+        rate = #{record.rate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sort != null">
+        sort = #{record.sort,jdbcType=INTEGER},
+      </if>
+      <if test="record.title != null">
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.url != null">
+        url = #{record.url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update clone_douban
+    set id = #{record.id,jdbcType=VARCHAR},
+      cover = #{record.cover,jdbcType=VARCHAR},
+      cover_x = #{record.coverX,jdbcType=VARCHAR},
+      cover_y = #{record.coverY,jdbcType=VARCHAR},
+      filepath = #{record.filepath,jdbcType=VARCHAR},
+      is_new = #{record.isNew,jdbcType=INTEGER},
+      p_date = #{record.pDate,jdbcType=VARCHAR},
+      playable = #{record.playable,jdbcType=INTEGER},
+      rate = #{record.rate,jdbcType=VARCHAR},
+      sort = #{record.sort,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      url = #{record.url,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

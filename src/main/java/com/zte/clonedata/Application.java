@@ -1,37 +1,38 @@
 package com.zte.clonedata;
 
-import com.zte.clonedata.dao.DoubanDAO;
 import com.zte.clonedata.util.FTPUtils;
 import com.zte.clonedata.util.JDBCUtils;
-import com.zte.clonedata.util.SpringContextUtil;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.zte.clonedata"})
 @EnableScheduling
+@MapperScan("com.zte.clonedata.dao")
+@ServletComponentScan
 public class Application {
+
+    // http://localhost:8090/druid/  >>> druid监控页面
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
     @Autowired
-    private DoubanDAO doubanDAO;
-    @Autowired
     private FTPUtils ftpUtils;
+    @Autowired
+    private JDBCUtils jdbcUtils;
     @PostConstruct
-    public void init() throws SQLException, ClassNotFoundException {
-        doubanDAO.check();
+    public void init() throws Exception {
         ftpUtils.connect();
         ftpUtils.disconnect();
+        jdbcUtils.check1();
+        jdbcUtils.check2();
     }
 }
