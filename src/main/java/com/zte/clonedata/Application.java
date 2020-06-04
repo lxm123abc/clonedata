@@ -18,7 +18,12 @@ import java.sql.SQLException;
 @ServletComponentScan
 public class Application {
 
-    // http://localhost:8090/druid/  >>> druid监控页面
+    /**
+     * druid监控页面 >>> http://localhost:8090/druid/
+     * maven配置 >>> mybatis-generator:generate
+     * 页面执行定时任务接口 >>> http://localhost:8090/page/execute?id=&token=LXM_123!
+     */
+
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
