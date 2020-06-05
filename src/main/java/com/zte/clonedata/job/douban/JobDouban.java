@@ -68,11 +68,20 @@ public class JobDouban {
                         douban.setPDate(nowYYYYMMDD);
                         String imageurl = douban.getCover();
                         String name = imageurl.substring(imageurl.lastIndexOf("/") + 1);
-                        String path = Contanst.TYPE_DOUBAN.concat(String.valueOf(i)).concat(File.separator).concat(name);
+                        String path = Contanst.BASEURL.concat(Contanst.TYPE_DOUBAN).concat(File.separator).concat(name);
                         douban.setFilepath(path);
-                        picDownUtils.urls.add(douban.getCover());
-                        picDownUtils.paths.add(path);
                         doubanMapper.insert(douban);
+                        /**
+                         * 1. 存在   不处理
+                         * 2. 不存在 加入任务
+                         */
+                        File file = new File(path);
+                        if (file.exists()){
+                            continue;
+                        }else {
+                            picDownUtils.urls.add(douban.getCover());
+                            picDownUtils.files.add(file);
+                        }
                     }
                     movies.addAll(
                             doubans.stream().map(douban -> {

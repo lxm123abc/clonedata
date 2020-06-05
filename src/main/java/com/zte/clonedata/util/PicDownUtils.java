@@ -23,7 +23,7 @@ import java.util.List;
 public class PicDownUtils implements Runnable{
 
     public volatile List<String > urls = new LinkedList<>();
-    public volatile List<String>  paths = new LinkedList<>();
+    public volatile List<File>  files = new LinkedList<>();
 
     private int err = 0;
     @Override
@@ -37,10 +37,9 @@ public class PicDownUtils implements Runnable{
             List<File> fileList = new LinkedList<>();
             for (int i = 0; i < size; i++) {
                 String url = urls.get(i);
-                String path = paths.get(i);
-                File file = null;
+                File file = files.get(i);
                 try {
-                    file = downSaveReturnFile(url, path);
+                    file = downSaveReturnFile(url, file);
                 } catch (InterruptedException e) {
                     log.error(e.getMessage());
                 }
@@ -56,11 +55,7 @@ public class PicDownUtils implements Runnable{
     }
 
     private int c = 0;
-    private File downSaveReturnFile(String url, String path) throws InterruptedException {
-        File file = new File(Contanst.BASEURL.concat(path));
-        if (file.exists()){
-            return file;
-        }
+    private File downSaveReturnFile(String url, File file) throws InterruptedException {
         try{
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
@@ -83,7 +78,7 @@ public class PicDownUtils implements Runnable{
             if (c++ < 10){
                 log.error("三秒后再次尝试连接  >>>{}<<<",c);
                 Thread.sleep(3000);
-                return downSaveReturnFile(url,path);
+                return downSaveReturnFile(url,file);
             }else{
                 err++;
                 c = 0;
