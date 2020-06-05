@@ -34,7 +34,7 @@ public class IdleConnectionThread extends Thread {
                 if (!this.shutdown) {
                     synchronized(this) {
                         this.wait(this.waitTime);
-                        this.connManager.closeExpiredConnections();
+                        //this.connManager.closeExpiredConnections();
                         PoolStats poolStats = this.connManager.getTotalStats();
                         Map<String, String> map = Maps.newHashMap();
                         map.put("最大线程数", String.valueOf(poolStats.getMax()));

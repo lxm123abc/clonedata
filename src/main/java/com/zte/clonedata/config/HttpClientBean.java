@@ -2,13 +2,26 @@ package com.zte.clonedata.config;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 /**
  * ProjectName: quartzjob-com.zte.quartzjob.config
@@ -36,8 +49,15 @@ httpClient.waitTime=30000
 public class HttpClientBean {
 
     @Bean(destroyMethod = "shutdown")
-    public HttpClientConnectionManager httpClientConnectionManager(){
-        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+    public HttpClientConnectionManager httpClientConnectionManager() throws KeyManagementException, NoSuchAlgorithmException {
+        //采用绕过验证的方式处理https请求
+        SSLContext sslcontext = createIgnoreVerifySSL();
+        //设置协议http和https对应的处理socket链接工厂的对象
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", new SSLConnectionSocketFactory(sslcontext))
+                .build();
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
         poolingHttpClientConnectionManager.setMaxTotal(200);
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(50);
         return poolingHttpClientConnectionManager;
@@ -73,6 +93,36 @@ public class HttpClientBean {
     public RequestConfig requestConfig(RequestConfig.Builder requestConfigBuilder){
         RequestConfig build = requestConfigBuilder.build();
         return build;
+    }
+
+
+
+
+    /**
+     * 绕过验证
+     */
+    public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("TLSv1.2");
+        // 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+            @Override
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                    String paramString) throws CertificateException {
+            }
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+        sc.init(null, new TrustManager[] { trustManager }, null);
+        sc.setDefault(sc);
+        return sc;
     }
 
 }

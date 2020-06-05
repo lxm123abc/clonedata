@@ -25,8 +25,8 @@ public class HttpUtils {
 
     public static String getJson(String url,String host) throws Exception {
         log.info("即将访问: {}, GET",url);
-        //CloseableHttpClient client = initHttpClient();
-        HttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = initHttpClient();//Spring: 连接池
+        //HttpClient client = HttpClients.createDefault();//main: 创建一个
         HttpGet httpGet = null;
         HttpResponse response = null;
         String resultJson = null;
