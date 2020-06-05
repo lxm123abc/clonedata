@@ -19,9 +19,9 @@ import java.sql.SQLException;
 public class Application {
 
     /**
-     * druid监控页面 >>> http://localhost:8090/druid/
-     * maven配置 >>> mybatis-generator:generate
-     * 页面执行定时任务接口 >>> http://localhost:8090/page/execute?id=&token=LXM_123!
+     * druid监控页面 >>>        http://localhost:8090/druid/
+     * maven配置 >>>           mybatis-generator:generate
+     * 页面执行定时任务接口 >>>   http://localhost:8090/page/execute?id=&token=LXM_123!
      */
 
 
