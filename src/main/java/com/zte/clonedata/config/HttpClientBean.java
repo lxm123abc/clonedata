@@ -58,7 +58,7 @@ public class HttpClientBean {
                 .register("https", new SSLConnectionSocketFactory(sslcontext))
                 .build();
         PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-        poolingHttpClientConnectionManager.setMaxTotal(200);
+        poolingHttpClientConnectionManager.setMaxTotal(100);
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(50);
         return poolingHttpClientConnectionManager;
     }

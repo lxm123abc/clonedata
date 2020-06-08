@@ -25,6 +25,7 @@ public class IdleConnectionThread extends Thread {
         this.waitTime = waitTime;
         this.setDaemon(true);
         this.connManager = connManager;
+        super.setName("httpclientPool");
         this.start();
     }
 

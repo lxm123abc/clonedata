@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-@Async
+@Async("taskExecutor")
 public class JobDouban {
 
     @Autowired
@@ -92,7 +92,7 @@ public class JobDouban {
                     if (doubans.size() < 1000) break;
                 }
                 log.info("豆瓣执行任务结束,用时:{} =================", System.currentTimeMillis() - start);
-                Thread t1 = new Thread(picDownUtils);
+                Thread t1 = new Thread(picDownUtils,"picDown-");
                 t1.start();
                 c = 0;
             } catch (Exception e) {
