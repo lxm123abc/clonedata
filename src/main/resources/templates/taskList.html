@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js" charset="utf-8"></script>
+</head>
+<body style="background-color: #F2F2F2;">
+        <div style="margin-top: 5%">
+            <table class="layui-hide" id="tab1" lay-filter="tab1"></table>
+        </div>
+
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="execute">执行</a>
+</script>
+</body>
+</html>
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var $ = layui.jquery
+            , table = layui.table
+
+        table.render({
+            elem: '#tab1'
+            , url: '/page/list'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter', 'exports', 'print']
+            , title: '数据表'
+            , cols: [
+                [
+                    {field: 'id', title: 'id', align: 'center',hide : true}
+                    , {field: 'name', title: '任务名称', align: 'center'}
+                    , {field: 'cron', title: '执行表达式', align: 'center'}
+                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center'}
+                ]
+            ]
+        });
+
+        //监听行工具事件
+        table.on('tool(tab1)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'execute') {
+                $.ajax({
+                    url: "/page/execute?id=" + data.id +"&token=LXM_123!"
+                    , type: "get"
+                    , async: false
+                    , success: function (res) {
+                        layer.msg(res.msg);
+                    }
+                });
+            }
+        });
+    });
+</script>

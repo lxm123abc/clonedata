@@ -8,6 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
@@ -16,12 +19,14 @@ import java.sql.SQLException;
 @EnableScheduling
 @MapperScan("com.zte.clonedata.dao")
 @ServletComponentScan
+@Controller
 public class Application {
 
     /**
      * druid监控页面 >>>        http://localhost:8090/druid/
      * maven配置 >>>           mybatis-generator:generate
      * 页面执行定时任务接口 >>>   http://localhost:8090/page/execute?id=&token=LXM_123!
+     * 任务Web页面  >>>         http://localhost:8090/admin/taskList
      */
 
 
@@ -39,5 +44,12 @@ public class Application {
         ftpUtils.disconnect();
         jdbcUtils.check1();
         jdbcUtils.check2();
+    }
+
+
+    @RequestMapping("/admin/taskList")
+    public ModelAndView taskList(){
+        ModelAndView modelAndView = new ModelAndView("taskList.html");
+        return modelAndView;
     }
 }

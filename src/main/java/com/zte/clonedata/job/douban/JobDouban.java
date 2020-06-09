@@ -76,23 +76,23 @@ public class JobDouban {
                          * 2. 不存在 加入任务
                          */
                         File file = new File(path);
-                        if (file.exists()){
+                        if (file.exists()) {
                             continue;
-                        }else {
+                        } else {
                             picDownUtils.urls.add(douban.getCover());
                             picDownUtils.files.add(file);
                         }
                     }
                     movies.addAll(
                             doubans.stream().map(douban -> {
-                                return new DoubanMovie(douban.getId(), douban.getTitle(),douban.getRate(),nowYYYYMMDD);
+                                return new DoubanMovie(douban.getId(), douban.getTitle(), douban.getRate(), nowYYYYMMDD);
                             }).collect(Collectors.toList())
                     );
                     log.info("豆瓣第{}页加载完毕 =============", i);
                     if (doubans.size() < 1000) break;
                 }
                 log.info("豆瓣执行任务结束,用时:{} =================", System.currentTimeMillis() - start);
-                Thread t1 = new Thread(picDownUtils,"picDown-");
+                Thread t1 = new Thread(picDownUtils, "picDown-");
                 t1.start();
                 c = 0;
             } catch (Exception e) {
@@ -111,14 +111,17 @@ public class JobDouban {
     }
 
     private void saveMovice(List<DoubanMovie> movies) {
-        int size = movies.size()/spList;
+        int size = movies.size() / spList;
+        int b = movies.size() % spList;
+        log.info("计划创建: {}条任务  >>>", b == 0 ? size : (size + 1));
+        log.info("开始执行计划任务项  >>>");
         for (int i = 0; i < size; i++) {
-            List<DoubanMovie> m1 = new ArrayList<>(movies.subList((i*spList), (i+1)*spList));
-            new JobDoubanMovie(m1,doubanMovieDAO);
+            List<DoubanMovie> m1 = new ArrayList<>(movies.subList((i * spList), (i + 1) * spList));
+            new JobDoubanMovie(m1, doubanMovieDAO,(i+1));
         }
-        if (movies.size()%spList != 0 ){
-            List<DoubanMovie> m1 = new ArrayList<>(movies.subList(size*spList, movies.size()));
-            new JobDoubanMovie(m1,doubanMovieDAO);
+        if (b != 0) {
+            List<DoubanMovie> m1 = new ArrayList<>(movies.subList(size * spList, movies.size()));
+            new JobDoubanMovie(m1, doubanMovieDAO,size);
         }
     }
 

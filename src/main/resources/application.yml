@@ -1,5 +1,7 @@
 server:
   port: 8090
+  servlet:
+    context-path: /
 
 cron:
   #定时删除数据cron
@@ -38,6 +40,12 @@ spring:
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       # 合并多个DruidDataSource的监控数据
       useGlobalDataSourceStat: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  mvc:
+    throw-exception-if-no-handler-found: true #找不到conntroller抛出异常
+    static-path-pattern: /static/** #静态资源
 
 #mybatis
 mybatis:

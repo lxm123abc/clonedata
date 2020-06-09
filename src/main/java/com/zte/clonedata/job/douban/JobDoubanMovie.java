@@ -25,17 +25,19 @@ public class JobDoubanMovie extends Thread {
 
     private List<DoubanMovie> list;
     private DoubanMovieMapper doubanMovieMapper;
+    private String name;
 
-    public JobDoubanMovie(List<DoubanMovie> list,DoubanMovieMapper doubanMovieMapper) {
+    public JobDoubanMovie(List<DoubanMovie> list,DoubanMovieMapper doubanMovieMapper,int n) {
         this.doubanMovieMapper = doubanMovieMapper;
         this.list = list;
+        this.name = "DoubanMovieDetail-".concat(String.valueOf(n));
         this.start();
     }
 
     @SneakyThrows
     @Override
     public void run() {
-
+        //long start = System.currentTimeMillis();
         for (DoubanMovie movie : list) {
             /**
              * 判断是否存在数据库
@@ -58,6 +60,7 @@ public class JobDoubanMovie extends Thread {
                 }
             }
         }
+        //log.info("任务: {} 已完成,耗时: {}  >>>",name,System.currentTimeMillis()-start);
     }
     private int c = 0;
     private void getMovice(DoubanMovie movie) throws InterruptedException {

@@ -42,7 +42,7 @@ public class IdleConnectionThread extends Thread {
                         map.put("空闲的线程数", String.valueOf(poolStats.getAvailable()));
                         map.put("租用的线程数", String.valueOf(poolStats.getLeased()));
                         map.put("即将启动的线程数", String.valueOf(poolStats.getPending()));
-                        log.info("连接池信息:" + map);
+                        log.debug("连接池信息:" + map);
                         this.connManager.closeIdleConnections(30L, TimeUnit.SECONDS);
                         continue;
                     }
