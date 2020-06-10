@@ -27,7 +27,7 @@ public class HttpUtils {
     private HttpUtils(){}
 
     public static String getJson(String url,String host) throws BusinessException {
-        log.info("即将访问: {}, GET",url);
+        //log.info("即将访问: {}, GET",url);
         CloseableHttpClient client = initHttpClient();//Spring: 连接池
         //HttpClient client = HttpClients.createDefault();//main: 创建一个
         HttpGet httpGet = null;

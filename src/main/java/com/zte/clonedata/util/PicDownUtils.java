@@ -59,6 +59,8 @@ public class PicDownUtils implements Runnable{
         try{
             HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
             httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
+            httpURLConnection.setConnectTimeout(8000);
+            httpURLConnection.setReadTimeout(8000);
             InputStream inputStream = httpURLConnection.getInputStream();
             if (inputStream != null){
                 File fileParent = file.getParentFile();

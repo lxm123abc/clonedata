@@ -2,12 +2,11 @@ spring:
   profiles:
     # 开发环境: dev
     # 生产环境: prod
-    active: dev
+    active: prod
 
 cron:
   #定时删除数据cron
   delete: 0 0 0 * * ?
-  tasklog: 0 0 0 * * ?
   down:
     #豆瓣执行时间
     douban: 0 15 * * * ?

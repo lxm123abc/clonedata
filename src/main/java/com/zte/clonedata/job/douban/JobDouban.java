@@ -126,8 +126,9 @@ public class JobDouban {
 
 
     private List<Douban> getDoubansAndSave(int i, int j, PicDownUtils picDownUtils, String nowYYYYMMDD) throws InterruptedException, BusinessException {
+        String url = null;
         try {
-            String url = "https://movie.douban.com/j/search_subjects?type=movie&tag=热门&page_limit="
+            url = "https://movie.douban.com/j/search_subjects?type=movie&tag=热门&page_limit="
                     .concat(String.valueOf(i + 1000))
                     .concat("&page_start=")
                     .concat(String.valueOf(i));
@@ -158,6 +159,7 @@ public class JobDouban {
             return doubans;
         } catch (BusinessException e) {
             if (c++ < 10) {
+                log.error("发生错误url >>> {}", url);
                 log.error("三秒后再次尝试连接  >>>{}<<<", c);
                 Thread.sleep(3000);
                 return getDoubansAndSave(i, j, picDownUtils, nowYYYYMMDD);
