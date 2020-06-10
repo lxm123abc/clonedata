@@ -9,14 +9,18 @@ import com.zte.clonedata.dao.TaskLogMapper;
 import com.zte.clonedata.model.Douban;
 import com.zte.clonedata.model.DoubanMovie;
 import com.zte.clonedata.model.TaskLog;
+import com.zte.clonedata.model.error.BusinessException;
+import com.zte.clonedata.model.error.EmBusinessError;
 import com.zte.clonedata.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,45 +66,57 @@ public class JobDouban {
         int i = 0;
         int j = 0;
         PicDownUtils picDownUtils = new PicDownUtils();
+        boolean success = true;
+        String executeResult = "";
         synchronized (this) {
             while (true) {
-                List<Douban> doubans = getDoubansAndSave(i, j, picDownUtils, nowYYYYMMDD);
+                List<Douban> doubans = null;
+                try {
+                    doubans = getDoubansAndSave(i, j, picDownUtils, nowYYYYMMDD);
+                } catch (BusinessException e) {
+                    success = false;
+                    executeResult = "失败,可能原因: ".concat(e.getCommonError().getErrorMsg());
+                    break;
+                }
                 movies.addAll(
                         doubans.stream().map(douban -> {
                             return new DoubanMovie(douban.getId(), douban.getTitle(), douban.getRate(), nowYYYYMMDD);
                         }).collect(Collectors.toList())
                 );
-                c = 0;
                 if (doubans.size() < 1000) break;
                 i = i + 1000;
                 j = j + 1000;
             }
-            log.info("豆瓣 {} 条数据加载完毕 =============", movies.size());
-            Thread t1 = new Thread(picDownUtils);
-            exe.execute(t1);
-            saveMovice(movies, exe);
-            exe.shutdown();
-            while (true) {
-                if (exe.isTerminated()) {
-                    break;
+            if (success){
+                log.info("豆瓣 {} 条数据加载完毕 =============", movies.size());
+                Thread t1 = new Thread(picDownUtils);
+                exe.execute(t1);
+                saveMovice(movies, exe);
+                exe.shutdown();
+                while (true) {
+                    if (exe.isTerminated()) {
+                        break;
+                    }
+                    Thread.sleep(500);
                 }
-                Thread.sleep(500);
+                executeResult = "请求成功,更新热门电影: ".concat(String.valueOf(movies.size())).concat("条");
+            }else {
+                log.error(executeResult);
             }
         }
 
         long time = System.currentTimeMillis() - start;
-        updateTaskLog(taskid,time,movies.size() == 0?false:true);
+        updateTaskLog(taskid,time,movies.size() == 0?false:true,executeResult);
         log.info("豆瓣执行任务结束,用时:{} =================", time);
     }
 
-    private void updateTaskLog(String taskid, long time, boolean b) {
+    private void updateTaskLog(String taskid, long time, boolean b,String executeResult) {
         TaskLog taskLog = new TaskLog();
         taskLog.setId(taskid);
+        taskLog.setExecuteResult(executeResult);
         if (b){
-            taskLog.setExecuteResult("成功");
             taskLog.setStatus(1);
         }else {
-            taskLog.setExecuteResult("失败");
             taskLog.setStatus(2);
         }
         taskLog.setEndtime(DateUtils.getNowYYYYMMDDHHMMSS());
@@ -109,7 +125,7 @@ public class JobDouban {
     }
 
 
-    private List<Douban> getDoubansAndSave(int i, int j, PicDownUtils picDownUtils, String nowYYYYMMDD) throws InterruptedException {
+    private List<Douban> getDoubansAndSave(int i, int j, PicDownUtils picDownUtils, String nowYYYYMMDD) throws InterruptedException, BusinessException {
         try {
             String url = "https://movie.douban.com/j/search_subjects?type=movie&tag=热门&page_limit="
                     .concat(String.valueOf(i + 1000))
@@ -138,15 +154,16 @@ public class JobDouban {
                     picDownUtils.files.add(file);
                 }
             }
+            c = 0;
             return doubans;
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        } catch (BusinessException e) {
             if (c++ < 10) {
                 log.error("三秒后再次尝试连接  >>>{}<<<", c);
                 Thread.sleep(3000);
                 return getDoubansAndSave(i, j, picDownUtils, nowYYYYMMDD);
             } else {
-                return Collections.EMPTY_LIST;
+                c = 0;
+                throw e;
             }
         }
     }

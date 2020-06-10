@@ -19,11 +19,20 @@
 </script>
 <script type="text/html" id="convertstatus">
     {{#  if(d.status == 0){ }}
-    {{ 运行中 }}
+    运行中
     {{#  } else if(d.status == 1){ }}
     <span style="color: #5FB878;">成功</span>
     {{#  } else if(d.status == 2){ }}
     <span style="color: #FF5722;">失败</span>
+    {{#  } }}
+</script>
+<script type="text/html" id="convertstatus2">
+    {{#  if(d.status == 0){ }}
+
+    {{#  } else if(d.status == 1){ }}
+    <span style="color: #5FB878;">{{d.executeResult}}</span>
+    {{#  } else if(d.status == 2){ }}
+    <span style="color: #FF5722;">{{d.executeResult}}</span>
     {{#  } }}
 </script>
 </body>
@@ -62,7 +71,7 @@
                             return d.time/1000;
                         }}
                         , {field: 'status', title: '状态', align: 'center', templet: '#convertstatus'}
-                        , {field: 'executeResult', title: '运行结果', align: 'center'}
+                        , {field: 'executeResult', title: '运行结果', align: 'center', templet: '#convertstatus2'}
                         , {fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center'}
                     ]
                 ]

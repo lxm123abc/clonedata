@@ -1,6 +1,8 @@
 package com.zte.clonedata.util;
 
 import com.zte.clonedata.contanst.Contanst;
+import com.zte.clonedata.model.error.BusinessException;
+import com.zte.clonedata.model.error.EmBusinessError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -11,6 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * ProjectName: clonedata-com.zte.clonedata.util
@@ -23,7 +26,7 @@ import java.io.IOException;
 public class HttpUtils {
     private HttpUtils(){}
 
-    public static String getJson(String url,String host) throws Exception {
+    public static String getJson(String url,String host) throws BusinessException {
         log.info("即将访问: {}, GET",url);
         CloseableHttpClient client = initHttpClient();//Spring: 连接池
         //HttpClient client = HttpClients.createDefault();//main: 创建一个
@@ -45,9 +48,9 @@ public class HttpUtils {
                 return resultJson;
             }
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            throw new BusinessException(EmBusinessError.HTTP_ERROR);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BusinessException(EmBusinessError.IO_ERROR);
         }finally {
             // 释放资源
             try {
@@ -55,18 +58,17 @@ public class HttpUtils {
                     EntityUtils.consume(response.getEntity());
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new BusinessException(EmBusinessError.IO_ERROR);
             }
         }
-        return "";
-
+        throw new BusinessException(EmBusinessError.NUKNOW_ERROR);
     }
 
-    public static CloseableHttpClient initHttpClient() throws Exception {
+    public static CloseableHttpClient initHttpClient() throws BusinessException {
         CloseableHttpClient closeableHttpClient = SpringContextUtil.getBean("httpClient");
         if (closeableHttpClient == null) {
             log.error("连接池获取异常");
-            throw new Exception("连接池获取异常");
+            throw new BusinessException(EmBusinessError.HTTP_POOL_ERROR);
         } else {
             return closeableHttpClient;
         }

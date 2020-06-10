@@ -130,12 +130,12 @@ public class JDBCUtils {
             Statement statement = con.createStatement();
             statement.executeUpdate("CREATE TABLE `tasklog` (\n" +
                     "  `id` varchar(32) NOT NULL,\n" +
-                    "  `type` int(1) DEFAULT NULL,\n" +
-                    "  `begintime` varchar(14) DEFAULT NULL,\n" +
-                    "  `endtime` varchar(14) DEFAULT NULL,\n" +
-                    "  `time` bigint(20) DEFAULT NULL,\n" +
-                    "  `status` int(1) DEFAULT NULL,\n" +
-                    "  `execute_result` varchar(1000) DEFAULT NULL,\n" +
+                    "  `type` int(1) NOT NULL DEFAULT '0',\n" +
+                    "  `begintime` varchar(14) NOT NULL DEFAULT '',\n" +
+                    "  `endtime` varchar(14) NOT NULL DEFAULT '',\n" +
+                    "  `time` bigint(20) NOT NULL DEFAULT '0',\n" +
+                    "  `status` int(1) NOT NULL DEFAULT '0',\n" +
+                    "  `execute_result` varchar(1000) NOT NULL DEFAULT '',\n" +
                     "  PRIMARY KEY (`id`)\n" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
             statement.close();
