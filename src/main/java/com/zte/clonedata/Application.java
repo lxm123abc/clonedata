@@ -1,7 +1,9 @@
 package com.zte.clonedata;
 
-import com.zte.clonedata.util.FTPUtils;
-import com.zte.clonedata.util.JDBCUtils;
+import com.zte.clonedata.dao.TaskLogMapper;
+import com.zte.clonedata.model.TaskLog;
+import com.zte.clonedata.model.TaskLogExample;
+import com.zte.clonedata.util.*;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SpringBootApplication(scanBasePackages = {"com.zte.clonedata"})
 @EnableScheduling
@@ -40,6 +43,8 @@ public class Application {
     private FTPUtils ftpUtils;
     @Autowired
     private JDBCUtils jdbcUtils;
+    @Autowired
+    private TaskLogMapper taskLogMapper;
     @PostConstruct
     public void init() throws Exception {
         ftpUtils.connect();
@@ -49,6 +54,19 @@ public class Application {
         jdbcUtils.check2(con);
         jdbcUtils.check3(con);
         con.close();
+        updateTaskLogStatusIs0();//修改任务表状态为0的为失败
+    }
+
+    private void updateTaskLogStatusIs0() {
+        TaskLogExample example = new TaskLogExample();
+        TaskLogExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(0);
+        TaskLog taskLog = new TaskLog();
+        taskLog.setExecuteResult("失败,可能原因: 系统关闭时关闭了正在进行的任务");
+        taskLog.setStatus(2);
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMddHHmmss");
+        taskLog.setEndtime(sdf2.format(new Date()));
+        taskLogMapper.updateByExampleSelective(taskLog,example);
     }
 
 

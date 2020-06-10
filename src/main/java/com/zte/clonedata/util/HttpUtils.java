@@ -48,9 +48,13 @@ public class HttpUtils {
                 return resultJson;
             }
         } catch (ClientProtocolException e) {
-            throw new BusinessException(EmBusinessError.HTTP_ERROR);
+            throw new BusinessException(EmBusinessError.HTTP_POOL_ERROR);
         } catch (IOException e) {
-            throw new BusinessException(EmBusinessError.IO_ERROR);
+            if (e instanceof UnknownHostException){
+                throw new BusinessException(EmBusinessError.HTTP_ERROR);
+            }else {
+                throw new BusinessException(EmBusinessError.IO_ERROR);
+            }
         }finally {
             // 释放资源
             try {

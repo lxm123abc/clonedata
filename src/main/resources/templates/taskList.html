@@ -51,14 +51,17 @@
         table.on('tool(tab1)', function (obj) {
             var data = obj.data;
             if (obj.event === 'execute') {
-                $.ajax({
-                    url: "/page/execute?id=" + data.id + "&token=LXM_123!"
-                    , type: "get"
-                    , async: false
-                    , success: function (res) {
-                        layer.msg(res.msg);
-                        init();
-                    }
+                layer.confirm('确认运行', function (index) {
+                    $.ajax({
+                        url: "/page/execute?id=" + data.id + "&token=LXM_123!"
+                        , type: "get"
+                        , async: false
+                        , success: function (res) {
+                            layer.msg(res.msg);
+                            init();
+                        }
+                    });
+                    layer.close(index);
                 });
             }
             if (obj.event === 'detail') {
