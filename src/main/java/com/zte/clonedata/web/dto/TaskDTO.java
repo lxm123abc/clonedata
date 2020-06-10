@@ -17,5 +17,8 @@ public class TaskDTO {
     private String id;
     private String name;
     private String cron;
+    private String executecount;
+    private int type;
+
 
 }

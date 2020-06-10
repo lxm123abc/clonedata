@@ -6,51 +6,79 @@
     <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
     <script src="/static/layui/layui.js" charset="utf-8"></script>
 </head>
-<body style="background-color: #F2F2F2;">
-        <div style="margin-top: 5%">
-            <table class="layui-hide" id="tab1" lay-filter="tab1"></table>
-        </div>
+<body style="text-align:center;background-color: #F2F2F2;">
+
+<div style="margin-top: 5%">
+    <button class="layui-btn" id="reload">刷新</button>
+    <table class="layui-hide" id="tab1" lay-filter="tab1"></table>
+</div>
 
 
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="execute">执行</a>
+    &nbsp;&nbsp;
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="detail">详情</a>
 </script>
 </body>
 </html>
 <script>
     layui.use(['table', 'jquery'], function () {
         var $ = layui.jquery
-            , table = layui.table
+            , table = layui.table;
 
-        table.render({
-            elem: '#tab1'
-            , url: '/page/list'
-            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
-            , defaultToolbar: ['filter', 'exports', 'print']
-            , title: '数据表'
-            , cols: [
-                [
-                    {field: 'id', title: 'id', align: 'center',hide : true}
-                    , {field: 'name', title: '任务名称', align: 'center'}
-                    , {field: 'cron', title: '执行表达式', align: 'center'}
-                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center'}
+        function init() {
+            table.render({
+                elem: '#tab1'
+                , url: '/page/list'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print']
+                , title: '数据表'
+                , cols: [
+                    [
+                        {field: 'id', title: 'id', align: 'center', hide: true}
+                        , {field: 'type', title: 'type', align: 'center', hide: true}
+                        , {field: 'name', title: '任务名称', align: 'center'}
+                        , {field: 'cron', title: '执行表达式', align: 'center'}
+                        , {field: 'executecount', title: '运行中 / 成功 / 失败', align: 'center'}
+                        , {fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center'}
+                    ]
                 ]
-            ]
-        });
+            });
+        }
+
 
         //监听行工具事件
         table.on('tool(tab1)', function (obj) {
             var data = obj.data;
             if (obj.event === 'execute') {
                 $.ajax({
-                    url: "/page/execute?id=" + data.id +"&token=LXM_123!"
+                    url: "/page/execute?id=" + data.id + "&token=LXM_123!"
                     , type: "get"
                     , async: false
                     , success: function (res) {
                         layer.msg(res.msg);
+                        init();
                     }
                 });
             }
+            if (obj.event === 'detail') {
+                var typestr = '';
+                if (data.type == 1){
+                    typestr = '豆瓣';
+                }
+                layer.open({
+                    type: 2,
+                    title: typestr,
+                    area: ['900px', '650px'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: 'detail?type=' + data.type
+                });
+            }
         });
+        $('#reload').on('click', function () {
+            init();
+        });
+        init();
     });
 </script>

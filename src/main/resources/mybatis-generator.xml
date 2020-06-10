@@ -48,12 +48,11 @@
 
 
     <!-- 指定数据库表 -->
-    <table tableName="clone_douban" domainObjectName="Douban">
+    <table tableName="tasklog" domainObjectName="TaskLog">
            <!--enableCountByExample="false" enableDeleteByExample="false"
            enableSelectByExample="false" enableUpdateByExample="false"
            selectByPrimaryKeyQueryId="false"-->
         <!--<generatedKey column="id" sqlStatement="MySql" identity="true"/>-->
     </table>
-    <table tableName="clone_douban_moviedetail" domainObjectName="DoubanMovie"></table>
 </context>
 </generatorConfiguration>

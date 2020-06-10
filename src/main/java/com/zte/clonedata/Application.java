@@ -10,9 +10,11 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.PostConstruct;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @SpringBootApplication(scanBasePackages = {"com.zte.clonedata"})
@@ -42,14 +44,23 @@ public class Application {
     public void init() throws Exception {
         ftpUtils.connect();
         ftpUtils.disconnect();
-        jdbcUtils.check1();
-        jdbcUtils.check2();
+        Connection con = jdbcUtils.getCon();
+        jdbcUtils.check1(con);
+        jdbcUtils.check2(con);
+        jdbcUtils.check3(con);
+        con.close();
     }
 
 
     @RequestMapping("/admin/taskList")
     public ModelAndView taskList(){
         ModelAndView modelAndView = new ModelAndView("taskList.html");
+        return modelAndView;
+    }
+    @RequestMapping("/admin/detail")
+    public ModelAndView detail(@RequestParam("type") Integer type){
+        ModelAndView modelAndView = new ModelAndView("detail.html");
+        modelAndView.addObject("type",type);
         return modelAndView;
     }
 }

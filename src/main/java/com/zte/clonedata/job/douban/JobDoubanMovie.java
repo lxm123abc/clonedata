@@ -31,7 +31,6 @@ public class JobDoubanMovie extends Thread {
         this.doubanMovieMapper = doubanMovieMapper;
         this.list = list;
         this.name = "DoubanMovieDetail-".concat(String.valueOf(n));
-        this.start();
     }
 
     @SneakyThrows

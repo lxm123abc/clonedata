@@ -14,9 +14,14 @@ public class DateUtils {
     private DateUtils(){}
 
     private static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+    private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMddHHmmss");
 
     public static String getNowYYYYMMDD(){
         return sdf1.format(new Date());
+    }
+
+    public static String getNowYYYYMMDDHHMMSS(){
+        return sdf2.format(new Date());
     }
 
 }

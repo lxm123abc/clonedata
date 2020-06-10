@@ -19,7 +19,7 @@ import java.sql.SQLException;
  */
 @Slf4j
 @Component
-@Async
+@Async("taskExecutor")
 public class DeleteJob {
 
     @Autowired

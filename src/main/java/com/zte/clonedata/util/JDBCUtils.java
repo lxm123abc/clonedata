@@ -47,8 +47,7 @@ public class JDBCUtils {
 
 
 
-    public void check1() throws Exception {
-        Connection con = getCon();
+    public void check1(Connection con) throws Exception {
         PreparedStatement ps = con.prepareStatement("select count(*) as c from clone_douban");
         ResultSet rs = null;
         try {
@@ -66,7 +65,7 @@ public class JDBCUtils {
                     "  `filepath` varchar(255) DEFAULT NULL,\n" +
                     "  `id` varchar(255) NOT NULL,\n" +
                     "  `is_new` int(1) DEFAULT NULL,\n" +
-                    "  `p_date` varchar(8) DEFAULT NULL,\n" +
+                    "  `p_date` varchar(14) DEFAULT NULL,\n" +
                     "  `playable` int(1) DEFAULT NULL,\n" +
                     "  `rate` varchar(255) DEFAULT NULL,\n" +
                     "  `sort` int(10) DEFAULT NULL,\n" +
@@ -76,15 +75,13 @@ public class JDBCUtils {
             statement.close();
         }
         ps.close();
-        con.close();
     }
 
 
 
 
 
-    public void check2() throws Exception {
-        Connection con = getCon();
+    public void check2(Connection con) throws Exception {
         ResultSet rs = null;
 
         PreparedStatement ps2 = con.prepareStatement("select count(*) as c from clone_douban_moviedetail");
@@ -109,13 +106,41 @@ public class JDBCUtils {
                     "  `ratingnum` varchar(255) DEFAULT NULL COMMENT '豆瓣评分',\n" +
                     "  `tags` varchar(255) DEFAULT NULL COMMENT '标签',\n" +
                     "  `moviedesc` varchar(3000) DEFAULT NULL COMMENT '简介',\n" +
-                    "  `p_date` varchar(8) DEFAULT NULL COMMENT '日期',\n" +
+                    "  `p_date` varchar(14) DEFAULT NULL COMMENT '日期',\n" +
                     "  `aka` varchar(255) DEFAULT NULL COMMENT '又名',\n" +
                     "  PRIMARY KEY (`movieid`)\n" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
             statement.close();
         }
-        con.close();
+        ps2.close();
+    }
+
+
+
+    public void check3(Connection con) throws Exception {
+        ResultSet rs = null;
+
+        PreparedStatement ps2 = con.prepareStatement("select count(*) as c from tasklog");
+        try {
+            rs = ps2.executeQuery();
+            rs.close();
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            log.error("未找到表: {} 将创建","tasklog");
+            Statement statement = con.createStatement();
+            statement.executeUpdate("CREATE TABLE `tasklog` (\n" +
+                    "  `id` varchar(32) NOT NULL,\n" +
+                    "  `type` int(1) DEFAULT NULL,\n" +
+                    "  `begintime` varchar(14) DEFAULT NULL,\n" +
+                    "  `endtime` varchar(14) DEFAULT NULL,\n" +
+                    "  `time` bigint(20) DEFAULT NULL,\n" +
+                    "  `status` int(1) DEFAULT NULL,\n" +
+                    "  `execute_result` varchar(1000) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+            statement.close();
+        }
+        ps2.close();
     }
 
 }

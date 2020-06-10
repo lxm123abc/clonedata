@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.w3.org/1999/xhtml http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all">
+    <script src="/static/layui/layui.js" charset="utf-8"></script>
+</head>
+<body style="text-align:center;background-color: #F2F2F2;">
+<div style="margin-top: 5%">
+    <button class="layui-btn" id="reload">刷新</button>
+    <table class="layui-hide" id="tab1" lay-filter="tab1"></table>
+</div>
+
+
+<script type="text/html" id="barDemo">
+    <button type="button" class="layui-btn layui-btn-xs layui-btn-danger layui-btn-disabled layui-btn-radius" lay-event="del">删除</button>
+</script>
+<script type="text/html" id="convertstatus">
+    {{#  if(d.status == 0){ }}
+    {{ 运行中 }}
+    {{#  } else if(d.status == 1){ }}
+    <span style="color: #5FB878;">成功</span>
+    {{#  } else if(d.status == 2){ }}
+    <span style="color: #FF5722;">失败</span>
+    {{#  } }}
+</script>
+</body>
+</html>
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['table', 'jquery'], function () {
+        var $ = layui.jquery
+            , table = layui.table;
+        var type = [[${type}]];
+
+        function init() {
+            table.render({
+                elem: '#tab1'
+                , url: '/page/detail?type='+type
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print']
+                , title: '数据表'
+                , page: true
+                , cols: [
+                    [
+                        {field: 'id', title: 'id', align: 'center', hide: true}
+                        , {field: 'type', title: '类型', align: 'center', hide: true, templet: function (d) {
+                            if (d.type == 1){
+                                return '豆瓣';
+                            }
+                            return '';
+                        }}
+                        , {field: 'begintime', title: '开始时间', align: 'center', templet: function (d) {
+                            return d.begintime.replace(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/, "$1-$2-$3 $4:$5:$6");
+                        }}
+                        , {field: 'endtime', title: '结束时间', align: 'center', templet: function (d) {
+                            return d.endtime.replace(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/, "$1-$2-$3 $4:$5:$6");
+                        }}
+                        , {field: 'time', title: '运行时长(秒)', hide: true, align: 'center', templet: function (d) {
+                            return d.time/1000;
+                        }}
+                        , {field: 'status', title: '状态', align: 'center', templet: '#convertstatus'}
+                        , {field: 'executeResult', title: '运行结果', align: 'center'}
+                        , {fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center'}
+                    ]
+                ]
+            });
+        }
+
+
+        //监听行工具事件
+        table.on('tool(tab1)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                return;
+                $.ajax({
+                    url: "/page/del?id=" + data.id
+                    , type: "get"
+                    , async: false
+                    , success: function (res) {
+                        if (res.code == 0) {
+                            obj.del();
+                        }
+                        layer.msg(res.msg);
+                    }
+                });
+            }
+        });
+        $('#reload').on('click', function () {
+            init();
+        });
+        init();
+    });
+
+</script>
