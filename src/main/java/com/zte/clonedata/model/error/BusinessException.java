@@ -1,5 +1,7 @@
 package com.zte.clonedata.model.error;
 
+import org.springframework.util.StringUtils;
+
 /**
  * ProjectName: dianping-com.zte.dianping.common
  *
@@ -27,6 +29,8 @@ public class BusinessException extends Exception {
     public BusinessException(EmBusinessError emBusinessError, String errMsg) {
         super();
         this.commonError = new CommonError(emBusinessError);
-        this.commonError.setErrorMsg(errMsg);
+        if (!StringUtils.isEmpty(errMsg)){
+            this.commonError.setErrorMsg(errMsg);
+        }
     }
 }

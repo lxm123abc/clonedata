@@ -1,9 +1,11 @@
 package com.zte.clonedata.util;
 
 import com.zte.clonedata.contanst.Contanst;
+import com.zte.clonedata.model.error.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -26,6 +28,7 @@ public class PicDownUtils implements Runnable{
     public volatile List<File>  files = new LinkedList<>();
 
     private int err = 0;
+    private int c = 0;
     @Override
     public void run() {
         synchronized (this){
@@ -42,6 +45,8 @@ public class PicDownUtils implements Runnable{
                     file = downSaveReturnFile(url, file);
                 } catch (InterruptedException e) {
                     log.error(e.getMessage());
+                }finally {
+                    c = 0;
                 }
                 if (file != null) fileList.add(file);
             }
@@ -54,28 +59,13 @@ public class PicDownUtils implements Runnable{
         }
     }
 
-    private int c = 0;
     private File downSaveReturnFile(String url, File file) throws InterruptedException {
+        FileOutputStream outputStream = null;
         try{
-            HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-            httpURLConnection.setRequestMethod(Contanst.METHOD_TYPE_GET);
-            httpURLConnection.setConnectTimeout(8000);
-            httpURLConnection.setReadTimeout(8000);
-            InputStream inputStream = httpURLConnection.getInputStream();
-            if (inputStream != null){
-                File fileParent = file.getParentFile();
-                //判断是否存在
-                if (!fileParent.exists()) {
-                    fileParent.mkdirs();
-                }
-                file.createNewFile();
-                //保存本地
-                FileUtils.writeToFile(file,inputStream);
-                return file;
-            }
-            c = 0;
-            Thread.sleep(200);
-        }catch (IOException e){
+            outputStream = new FileOutputStream(file);
+            HttpUtils.picGetFileSave(url,outputStream);
+            return file;
+        }catch (BusinessException e){
             log.error(e.getMessage());
             if (c++ < 10){
                 log.error("三秒后再次尝试连接  >>>{}<<<",c);
@@ -83,11 +73,9 @@ public class PicDownUtils implements Runnable{
                 return downSaveReturnFile(url,file);
             }else{
                 err++;
-                c = 0;
             }
-        } catch (InterruptedException e) {
+        } catch (IOException e) {
             log.error(e.getMessage());
-            c = 0;
         }
         return null;
     }

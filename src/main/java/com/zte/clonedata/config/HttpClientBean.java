@@ -84,9 +84,9 @@ public class HttpClientBean {
     @Bean
     public RequestConfig.Builder requestConfigBuilder(){
         RequestConfig.Builder b = RequestConfig.custom();
-        b.setConnectTimeout(5000);
-        b.setConnectionRequestTimeout(500);
-        b.setSocketTimeout(10000);
+        b.setConnectTimeout(8000);
+        b.setConnectionRequestTimeout(800);
+        b.setSocketTimeout(8000);
         return b;
     }
     @Bean

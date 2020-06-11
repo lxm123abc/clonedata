@@ -155,7 +155,6 @@ public class JobDouban {
                     picDownUtils.files.add(file);
                 }
             }
-            c = 0;
             return doubans;
         } catch (BusinessException e) {
             if (c++ < 10) {
@@ -164,9 +163,10 @@ public class JobDouban {
                 Thread.sleep(3000);
                 return getDoubansAndSave(i, j, picDownUtils, nowYYYYMMDD);
             } else {
-                c = 0;
                 throw e;
             }
+        }finally {
+            c = 0;
         }
     }
 
